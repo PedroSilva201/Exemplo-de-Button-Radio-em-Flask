@@ -1,0 +1,93 @@
+<!-- templates/resultados.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados</title>
+</head>
+<body>
+    <h1>Resultados da Seleção</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Valor Selecionado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for resultado in resultados %}
+                <tr>
+                    <td>{{ resultado[0] }}</td> <!-- ID -->
+                    <td>{{ resultado[1] }}</td> <!-- Valor -->
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h1>Resultados da Seleção por porcentagem</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Opção</th>
+                <th>Porcentagem</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for opcao, porcentagem in porcentagens %}
+                <tr>
+                    <td>{{ opcao }}</td>
+                    <td>{{ "%.2f"|format(porcentagem) }}%</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p>Total de respostas: {{ total_respostas }}</p>
+    <a href="{{ url_for('inicio') }}">Voltar à página inicial</a>
+</body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Resultados da Seleção</h1>
+    
+    <canvas id="grafico"></canvas>
+    
+    <script>
+        var ctx = document.getElementById('grafico').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'pie',  // Ou 'bar' para gráfico de barras
+            data: {
+                labels: {% for opcao, _ in porcentagens %}"{{ opcao }}"{% if not loop.last %}, {% endif %}{% endfor %},
+                datasets: [{
+                    label: 'Porcentagem de Seleções',
+                    data: {% for _, porcentagem in porcentagens %}{{ porcentagem }}{% if not loop.last %}, {% endif %}{% endfor %},
+                    backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#FF33A6'],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.label + ": " + tooltipItem.raw.toFixed(2) + "%";
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <a href="{{ url_for('inicio') }}">Voltar à página inicial</a>
+</body>
+</html>
+
+</html>
